@@ -42,6 +42,8 @@
                   {% else %}
                   <span class="label label-default">{{ task.state }}</span>
                   {% end %}
+                  <!-- Requeue button -->
+                  <a class = "btn btn-warning" role = "button" onclick = "Requeue()"> Requeue </a>
                 </td>
               </tr>
               <tr>
@@ -59,6 +61,43 @@
               </tbody>
             </table>
           </div>
+
+          <script type = "text/javascript">
+
+            function decodeHtmlEntities(safe) { // Convert special characters &lt, &gt, &amp to plaintext
+              var plaintext = $('<textarea />').html(safe).text();
+              return plaintext;
+            }
+
+            function getArgs(){
+              var args = "{{args_json}}";
+              args = decodeHtmlEntities(args);
+              return args;
+            }
+
+            function Requeue(){
+              var args = getArgs();
+              var api_url = "/api/task/send-task/{{ getattr(task, 'name', None) }}";
+
+              $.ajax({
+                 type: "POST",
+                 url: api_url,
+                 dataType: "json",
+
+                 success: function () {
+                     alert("Requeue successful")
+                     window.location = "/tasks"
+                 },
+                 error: function(request){
+                   alert("Request failed: " + api_url)
+                 },
+
+                 data: '{"args": ' + args + '}'
+             });
+
+
+            }
+          </script>
 
           <div class="span6">
             <table class="table table-bordered table-striped">
